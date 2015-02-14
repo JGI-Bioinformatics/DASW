@@ -111,10 +111,9 @@ int main(int argc, char** argv)
 //        s.writeToFile("data/3_xxx.fax", 100, 420);
 
         SmithWatermanLocal swl;
-        swl.Run(&s, 234, 660, gapOpen, gapExtension);
-        swl.PrintResults("results/2.txt");
+	swl.RunAll(&s, gapOpen, gapExtension);
+        //swl.PrintResults("results/2.txt");
 
-      
     }
     catch (Exception* ex)
     {

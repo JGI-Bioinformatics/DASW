@@ -102,7 +102,7 @@ void SimilarityAlgorithmCpu::RunAll(Sequences* s, int gapOp, int gapEx)
                 
             }
             scores[j][i] = score;
-            //printf("%5d %5d\n", j, i);
+            printf("%5d %5d: %5d\n%s\n%s\n", j, i, score, result1, result2);
         }
         printf("%5d\n", j);
     }
@@ -115,7 +115,7 @@ void SimilarityAlgorithmCpu::RunAll(Sequences* s, int gapOp, int gapEx)
 void SimilarityAlgorithmCpu::PrintResults(const char* fileName)
 {
     FILE* testF = fopen(fileName, "w");
-
+/*
     fprintf(testF, "MACIERZ A:\n\n");
     fprintf(testF, "       _");
     for (int i = 1; i <= seq2Length; i++)
@@ -137,6 +137,7 @@ void SimilarityAlgorithmCpu::PrintResults(const char* fileName)
         fprintf(testF, "\n");
     }
 
+*/
 //    fprintf(testF, "\n\n\n");
 //
 //    fprintf(testF, "MACIERZ kontynuacji left:\n\n");
@@ -171,6 +172,7 @@ void SimilarityAlgorithmCpu::PrintResults(const char* fileName)
 //        fprintf(testF, "\n");
 //    }
 
+/*
     fprintf(testF, "\n\n\n");
 
     fprintf(testF, "MACIERZ kierunku:\n\n");
@@ -188,7 +190,7 @@ void SimilarityAlgorithmCpu::PrintResults(const char* fileName)
         }
         fprintf(testF, "\n");
     }
-
+*/
 
     //RESULT
     fprintf(testF, "\n\nscore: %d\n", score);
