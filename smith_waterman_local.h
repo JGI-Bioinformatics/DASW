@@ -12,6 +12,8 @@ namespace Algorithms
     {
         class SmithWatermanLocal:public SimilarityAlgorithmCpu
         {
+        public:
+            SmithWatermanLocal() : SimilarityAlgorithmCpu(), gapEx2(2), gapEx2Len(10) { }
         protected:
             virtual void InitializeMatrices();
             virtual void FillMatrices();
@@ -19,6 +21,8 @@ namespace Algorithms
             int maxX;
             int maxY;
             int maxVal;
+            int gapEx2;
+            int gapEx2Len;
         };
     }
 }

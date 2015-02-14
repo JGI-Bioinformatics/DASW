@@ -6,6 +6,7 @@ using Data::SubstitutionMatrix;
 
 void SmithWatermanLocal::InitializeMatrices()
 {
+    //printf("gapOpen %d, gapExt %d, gapExt2Len %d, gapEx2 %d\n", gapOp, gapEx, gapEx2Len, gapEx2);
     for (int i = 0; i < seq1Length + 1; i++)
     {
         A[i][0] = 0;
@@ -35,30 +36,38 @@ void SmithWatermanLocal::FillMatrices()
     //F - responsible for up   direction
 
     maxVal = INT_MIN;
-    int Elen = 0, Flen[seq1Length];
-    Flen[0] = 0;
+    int Elen, Flen[seq2Length+1];
+    for (int j = 1; j <= seq2Length; j++)
+      Flen[j] = 0;
+    printf("gapOpen %d, gapExt %d, gapExt2Len %d, gapEx2 %d\n", gapOp, gapEx, gapEx2Len, gapEx2);
     
     for (int i = 1; i <= seq1Length; i++)
     {
-        Flen[i] = 0;
+        Elen = 0;
         for (int j = 1; j <= seq2Length; j++)
         {
-            int e1 = E[i][j - 1] - gapEx, e2 = A[i][j - 1] - gapOp;;
+            int e1 = E[i][j - 1] - ((Elen >= gapEx2Len) ? gapEx2 : gapEx), e2 = A[i][j - 1] - gapOp;;
             if (e1 >= e2) {
                E[i][j] = e1;
                B[i][j - 1].continueLeft = 1;
+               Elen++;
+//if (Elen >= gapEx2Len) {printf("."); } //else { printf("%d of %d\t", Elen, gapEx2Len); }
             } else {
                E[i][j] = e2;
                B[i][j - 1].continueLeft = 0;
+               Elen = 0;
             }
 
-            int f1 = F[i - 1][j] - gapEx, f2 = A[i - 1][j] - gapOp;
+            int f1 = F[i - 1][j] - ((Flen[j] >= gapEx2Len) ? gapEx2 : gapEx), f2 = A[i - 1][j] - gapOp;
             if (f1 >= f2) {
                 F[i][j] = f1;
                 B[i - 1][j].continueUp = 1;
+                Flen[j]++;
+//if (Flen[j] >= gapEx2Len) {printf("+"); }
             } else {
                 F[i][j] = f2;
                 B[i - 1][j].continueUp = 0;
+                Flen[j] = 0;
             }
 
             int a1 = A[i - 1][j - 1] + sm->getScore(seq1[i], seq2[j]);

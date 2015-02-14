@@ -32,6 +32,7 @@ void SimilarityAlgorithmCpu::Run(Sequences* s, int seq1No, int seq2No, int gapOp
     this->gapOp = gapOp;
     this->gapEx = gapEx;
 
+// TODO stop this insane realloations... just allocate if total size < 6 * maxa * maxb
     DeallocateMemoryForSingleRun();
     AllocateMemoryForSingleRun();
     InitializeMatrices();

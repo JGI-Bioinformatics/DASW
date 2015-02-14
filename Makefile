@@ -76,6 +76,8 @@ needleman_wunsch_global.o: needleman_wunsch_global.cpp \
 thread_manager.o: thread_manager.cpp thread_manager.h thread.h \
   exceptions.h sem.h mutex.h
 		$(CXX) $(CXXFLAGS)  -c ./thread_manager.cpp
+dasw.o: dasw.cpp arguments_manager.h exceptions.h  matches_manager.h sequences.h similarity_algorithm_cpu.h smith_waterman_local.h substitution_matrix.h
+		$(CXX) $(CXXFLAGS)  -c ./dasw.cpp
 
 #------------------------------ DIRECTORIES ------------------------------------
 directories: results 
@@ -84,23 +86,8 @@ results:
 	 mkdir -p results
 #-------------------------------- CLEANING -------------------------------------
 clean: 
-	rm -f similarity_algorithm_cpu.o 
-	rm -f smith_waterman_local.o 
-	rm -f sequences.o 
-	rm -f exceptions.o 
-	rm -f sem.o 
-	rm -f arguments_manager.o 
-	rm -f substitution_matrix.o 
-	rm -f main.o 
-	rm -f thread.o 
-	rm -f mutex.o 
-	rm -f matches_manager.o 
-	rm -f needleman_wunsch_semiglobal.o 
-	rm -f hi_res_timer.o 
-	rm -f needleman_wunsch_global.o 
-	rm -f thread_manager.o 
-	rm -f seq.out
-	rm -f main_cu.o
+	rm -f *.o
+	rm -f dasw
 
 #--------------------------------- OTHER ---------------------------------------
 ptx:
