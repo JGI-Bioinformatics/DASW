@@ -35,19 +35,31 @@ void SmithWatermanLocal::FillMatrices()
     //F - responsible for up   direction
 
     maxVal = INT_MIN;
+    int Elen = 0, Flen[seq1Length];
+    Flen[0] = 0;
     
     for (int i = 1; i <= seq1Length; i++)
     {
+        Flen[i] = 0;
         for (int j = 1; j <= seq2Length; j++)
         {
             int e1 = E[i][j - 1] - gapEx, e2 = A[i][j - 1] - gapOp;;
-            //E[i][j] = MAX(E[i][j - 1] - gapEx, A[i][j - 1] - gapOp);
-            E[i][j] = MAX(e1, e2);
-            B[i][j - 1].continueLeft = (E[i][j] == e1);
+            if (e1 >= e2) {
+               E[i][j] = e1;
+               B[i][j - 1].continueLeft = 1;
+            } else {
+               E[i][j] = e2;
+               B[i][j - 1].continueLeft = 0;
+            }
+
             int f1 = F[i - 1][j] - gapEx, f2 = A[i - 1][j] - gapOp;
-            //F[i][j] = MAX(F[i - 1][j] - gapEx, A[i - 1][j] - gapOp);
-            F[i][j] = MAX(f1, f2);
-            B[i - 1][j].continueUp = (F[i][j] == f1);
+            if (f1 >= f2) {
+                F[i][j] = f1;
+                B[i - 1][j].continueUp = 1;
+            } else {
+                F[i][j] = f2;
+                B[i - 1][j].continueUp = 0;
+            }
 
             int a1 = A[i - 1][j - 1] + sm->getScore(seq1[i], seq2[j]);
             A[i][j] = MAX3(E[i][j], F[i][j], a1);
@@ -55,7 +67,7 @@ void SmithWatermanLocal::FillMatrices()
 
             if (A[i][j] == 0)
                 B[i][j].backDirection = stop; //SPECYFIC FOR SMITH WATERMAN
-            else if(A[i][j] == (a1))
+            else if(A[i][j] == a1)
                 B[i][j].backDirection = crosswise;
             else if(A[i][j] == E[i][j])
                 B[i][j].backDirection = left;
