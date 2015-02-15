@@ -89,6 +89,12 @@ int main(int argc, char** argv)
     
     if(!readArguments(argc, argv))
         return 1;
+
+    if(databasefile == NULL)
+    {
+        printf("%s\n", HELP);
+        return false;
+    }
     
     try
     {
@@ -99,7 +105,7 @@ int main(int argc, char** argv)
 
         SmithWatermanLocal swl[omp_get_max_threads()];
 
-        if (strcmp(databasefile, queryfile) == 0) {
+        if (queryfile == NULL || strcmp(databasefile, queryfile) == 0) {
             printf("query and database are the same, calculating lower triangle of database\n");
 
           #pragma omp parallel for schedule(dynamic, 1)
