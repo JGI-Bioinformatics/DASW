@@ -20,10 +20,21 @@ char gapExtension = 2;
 char gapExt2Len = 10;
 char gapExt2 = 0;
 char* submatrix = (char*)"data/substitution_matrices/EBLOSUM30";
-char* databasefile = (char*)"data/3_667.fax";
-char* queryfile = (char*)"data/3_667.fax";
+char* databasefile = NULL; //(char*)"data/3_667.fax";
+char* queryfile = NULL; //(char*)"data/3_667.fax";
 char* outfile = NULL;
 char* algName = (char*)"sws";//Smith Waterman Score
+
+char *HELP = (char*) "Parameters:\n"
+" --query (-q),      path to a input query fasta file\n"
+" --database (-d),   path to a input reference fasta file (if same then lower triangle is calculated)\n"
+" --submatrix (-sm), e.g. data/substitution_matrices/BLOSUM62.txt\n"
+" --gapopen (-go),   e.g. 10\n"
+" --gapext (-ge),    e.g. 2\n"
+" --gapext2len       Second affine gap length e.g. 10\n" 
+" --gapext2          Second affing gap extension penalty e.g. 0\n"
+" --help (-h),       print this help\n"
+"\n";
 
 bool readArguments(int argc, char** argv)
 {
@@ -33,11 +44,7 @@ bool readArguments(int argc, char** argv)
     argBuf = (char*)arguments.getParam("help", "h");
     if (argBuf != NULL)
     {
-        ifstream fin("HELP");
-        string temp;
-        while(getline(fin, temp))
-            cout << temp << endl;
-        fin.close();
+        printf("%s\n", HELP);
         return false;
     }
 
