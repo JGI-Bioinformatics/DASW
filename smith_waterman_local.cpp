@@ -41,39 +41,62 @@ void SmithWatermanLocal::FillMatrices()
       Flen[j] = 0;
     printf("gapOpen %d, gapExt %d, gapExt2Len %d, gapEx2 %d\n", gapOp, gapEx, gapEx2Len, gapEx2);
     
+    int *Ai = A[0], *Ai1, *Ei = E[0], *Ei1, *Fi = F[0], *Fi1;
+    BackUpStruct *Bi = B[0], *Bi1;
     for (int i = 1; i <= seq1Length; i++)
     {
         Elen = 0;
+        Ai1 = Ai;
+        Ei1 = Ei;
+        Fi1 = Fi;
+        Bi1 = Bi;
+        Ai = A[i];
+        Ei = E[i];
+        Fi = F[i];
+        Bi = B[i];
         for (int j = 1; j <= seq2Length; j++)
         {
-            int e1 = E[i][j - 1] - ((Elen >= gapEx2Len) ? gapEx2 : gapEx), e2 = A[i][j - 1] - gapOp;;
+            //int e1 = E[i][j - 1] - ((Elen >= gapEx2Len) ? gapEx2 : gapEx), e2 = A[i][j - 1] - gapOp;;
+            int e1 = Ei[j - 1] - ((Elen >= gapEx2Len) ? gapEx2 : gapEx), e2 = Ai[j - 1] - gapOp;;
             if (e1 >= e2) {
-               E[i][j] = e1;
-               B[i][j - 1].continueLeft = 1;
+               //E[i][j] = e1;
+               Ei[j] = e1;
+               //B[i][j - 1].continueLeft = 1;
+               Bi[j - 1].continueLeft = 1;
                Elen++;
 //if (Elen >= gapEx2Len) {printf("."); } //else { printf("%d of %d\t", Elen, gapEx2Len); }
             } else {
-               E[i][j] = e2;
-               B[i][j - 1].continueLeft = 0;
+               //E[i][j] = e2;
+               Ei[j] = e2;
+               //B[i][j - 1].continueLeft = 0;
+               Bi[j - 1].continueLeft = 0;
                Elen = 0;
             }
 
-            int f1 = F[i - 1][j] - ((Flen[j] >= gapEx2Len) ? gapEx2 : gapEx), f2 = A[i - 1][j] - gapOp;
+            //int f1 = F[i - 1][j] - ((Flen[j] >= gapEx2Len) ? gapEx2 : gapEx), f2 = A[i - 1][j] - gapOp;
+            int f1 = Fi1[j] - ((Flen[j] >= gapEx2Len) ? gapEx2 : gapEx), f2 = Ai1[j] - gapOp;
             if (f1 >= f2) {
-                F[i][j] = f1;
-                B[i - 1][j].continueUp = 1;
+                //F[i][j] = f1;
+                Fi[j] = f1;
+                //B[i - 1][j].continueUp = 1;
+                Bi1[j].continueUp = 1;
                 Flen[j]++;
 //if (Flen[j] >= gapEx2Len) {printf("+"); }
             } else {
-                F[i][j] = f2;
-                B[i - 1][j].continueUp = 0;
+                //F[i][j] = f2;
+                Fi[j] = f2;
+                //B[i - 1][j].continueUp = 0;
+                Bi1[j].continueUp = 0;
                 Flen[j] = 0;
             }
 
-            int a1 = A[i - 1][j - 1] + sm->getScore(seq1[i], seq2[j]);
-            A[i][j] = MAX3(E[i][j], F[i][j], a1);
-            A[i][j] = MAX(A[i][j], 0);
-
+            //int a1 = A[i - 1][j - 1] + sm->getScore(seq1[i], seq2[j]);
+            //A[i][j] = MAX3(E[i][j], F[i][j], a1);
+            //A[i][j] = MAX(A[i][j], 0);
+            int a1 = Ai1[j - 1] + sm->getScore(seq1[i], seq2[j]);
+            Ai[j] = MAX3(Ei[j], Fi[j], a1);
+            Ai[j] = MAX(Ai[j], 0);
+/*
             if (A[i][j] == 0)
                 B[i][j].backDirection = stop; //SPECYFIC FOR SMITH WATERMAN
             else if(A[i][j] == a1)
@@ -82,13 +105,23 @@ void SmithWatermanLocal::FillMatrices()
                 B[i][j].backDirection = left;
             else //if(A[i][j] == F[i][j])
                 B[i][j].backDirection = up;
+*/
+
+            if (Ai[j] == 0)
+                Bi[j].backDirection = stop; //SPECYFIC FOR SMITH WATERMAN
+            else if(Ai[j] == a1)
+                Bi[j].backDirection = crosswise;
+            else if(Ai[j] == Ei[j])
+                Bi[j].backDirection = left;
+            else //if(A[i][j] == F[i][j])
+                Bi[j].backDirection = up;
 
 
-            if(A[i][j] > maxVal)
+            if(Ai[j] > maxVal)
             {
                 maxX = j;
                 maxY = i;
-                maxVal = A[i][j];
+                maxVal = Ai[j];
             }
 
         }
