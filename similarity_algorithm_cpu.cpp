@@ -103,7 +103,7 @@ void SimilarityAlgorithmCpu::RunAll(Sequences* s, int gapOp, int gapEx)
                 
             }
             scores[j][i] = score;
-            printf("%5d %5d: %5d\n%s\n%s\n", j, i, score, result1, result2);
+            printf("%5d %5d: %5d %s %s\n%s\n%s\n", j, i, score, s->getSeqName(i), s->getSeqName(j), result1, result2);
         }
         printf("%5d\n", j);
     }
