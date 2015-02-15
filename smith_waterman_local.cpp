@@ -56,48 +56,52 @@ void SmithWatermanLocal::FillMatrices()
         Bi = B[i];
         for (int j = 1; j <= seq2Length; j++)
         {
+            int Aij, Eij, Fij;
             int e1 = Ei[j - 1] - ((Elen >= gapEx2Len) ? gapEx2 : gapEx), e2 = Ai[j - 1] - gapOp;;
             if (e1 >= e2) {
-               Ei[j] = e1;
+               Eij = e1;
                Bi[j - 1].continueLeft = 1;
                Elen++;
             } else {
-               Ei[j] = e2;
+               Eij = e2;
                Bi[j - 1].continueLeft = 0;
                Elen = 0;
             }
 
             int f1 = Fi1[j] - ((Flen[j] >= gapEx2Len) ? gapEx2 : gapEx), f2 = Ai1[j] - gapOp;
             if (f1 >= f2) {
-                Fi[j] = f1;
+                Fij = f1;
                 Bi1[j].continueUp = 1;
                 Flen[j]++;
             } else {
-                Fi[j] = f2;
+                Fij = f2;
                 Bi1[j].continueUp = 0;
                 Flen[j] = 0;
             }
 
             int a1 = Ai1[j - 1] + sm->getScore(seq1[i], seq2[j]);
-            Ai[j] = MAX3(Ei[j], Fi[j], a1);
-            Ai[j] = MAX(Ai[j], 0);
+            Aij = MAX(a1, 0);
 
-            if (Ai[j] == 0)
+            Aij = MAX3(Aij, Eij, Fij);
+             
+            if (Aij == 0)
                 Bi[j].backDirection = stop; //SPECYFIC FOR SMITH WATERMAN
-            else if(Ai[j] == a1)
+            else if(Aij == a1)
                 Bi[j].backDirection = crosswise;
-            else if(Ai[j] == Ei[j])
+            else if(Aij == Eij)
                 Bi[j].backDirection = left;
             else //if(A[i][j] == F[i][j])
                 Bi[j].backDirection = up;
 
-
-            if(Ai[j] > maxVal)
+            if(Aij > maxVal)
             {
                 maxX = j;
                 maxY = i;
-                maxVal = Ai[j];
+                maxVal = Aij;
             }
+            Ai[j] = Aij;
+            Ei[j] = Eij;
+            Fi[j] = Fij;
 
         }
     }
