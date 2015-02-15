@@ -38,6 +38,7 @@ void SimilarityAlgorithmCpu::Run(Sequences* s, int seq1No, int seq2No, int gapOp
     InitializeMatrices();
     FillMatrices();
     BackwardMoving();
+    printf("%5d %5d: %5d %s %s\n%s\n%s\n", seq1No, seq2No, score, s->getSeqName(seq1No), s->getSeqName(seq2No), result1, result2);
 }
 
 void SimilarityAlgorithmCpu::AllocateMemoryForSingleRun()
@@ -103,7 +104,7 @@ void SimilarityAlgorithmCpu::RunAll(Sequences* s, int gapOp, int gapEx)
                 
             }
             scores[j][i] = score;
-            printf("%5d %5d: %5d %s %s\n%s\n%s\n", j, i, score, s->getSeqName(i), s->getSeqName(j), result1, result2);
+            //printf("%5d %5d: %5d %s %s\n%s\n%s\n", j, i, score, s->getSeqName(i), s->getSeqName(j), result1, result2);
         }
         printf("%5d\n", j);
     }
