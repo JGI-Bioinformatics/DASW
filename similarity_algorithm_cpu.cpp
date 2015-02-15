@@ -18,7 +18,7 @@ SimilarityAlgorithmCpu::SimilarityAlgorithmCpu()
     matches2 = NULL;
 }
 
-void SimilarityAlgorithmCpu::Run(Sequences* s, int seq1No, int seq2No, int gapOp, int gapEx)
+void SimilarityAlgorithmCpu::Run(Sequences* s, int seq1No, int seq2No, int gapOp, int gapEx, int gapExt2Len, int gapExt2)
 {
     int* starts = s->getStarts();
     char* sequences = s->getSequences();
@@ -31,14 +31,44 @@ void SimilarityAlgorithmCpu::Run(Sequences* s, int seq1No, int seq2No, int gapOp
 
     this->gapOp = gapOp;
     this->gapEx = gapEx;
+    this->gapExt2Len = gapExt2Len;
+    this->gapExt2 = gapExt2;
 
+    JustRun();
+    printf("%5d %5d: %5d %s %s\n%s\n%s\n", seq1No, seq2No, score, s->getSeqName(seq1No), s->getSeqName(seq2No), result1, result2);
+}
+
+void SimilarityAlgorithmCpu::RunSeqs(Sequences* s, int seq1No, Sequences* s2, int seq2No, int gapOp, int gapEx, int gapExt2Len, int gapExt2)
+{
+    int* starts = s->getStarts();
+    char* sequences = s->getSequences();
+    int* lengths = s->getLengths();
+    seq1 = &(sequences[starts[seq1No]]) - 1;
+    int* starts2 = s2->getStarts();
+    char* sequences2 = s2->getSequences();
+    int* lengths2 = s2->getLengths();
+    seq2 = &(sequences2[starts2[seq2No]]) - 1;
+    seq1Length = lengths[seq1No];
+    seq2Length = lengths2[seq2No];
+    sm = s->getSubtitutionMatrix();
+
+    this->gapOp = gapOp;
+    this->gapEx = gapEx;
+    this->gapExt2Len = gapExt2Len;
+    this->gapExt2 = gapExt2;
+
+    JustRun();
+    printf("%5d %5d: %5d %s %s\n%s\n%s\n", seq1No, seq2No, score, s->getSeqName(seq1No), s2->getSeqName(seq2No), result1, result2);
+}
+
+void SimilarityAlgorithmCpu::JustRun()
+{
 // TODO stop this insane realloations... just allocate if total size < 6 * maxa * maxb
     DeallocateMemoryForSingleRun();
     AllocateMemoryForSingleRun();
     InitializeMatrices();
     FillMatrices();
     BackwardMoving();
-    printf("%5d %5d: %5d %s %s\n%s\n%s\n", seq1No, seq2No, score, s->getSeqName(seq1No), s->getSeqName(seq2No), result1, result2);
 }
 
 void SimilarityAlgorithmCpu::AllocateMemoryForSingleRun()
@@ -68,7 +98,7 @@ void SimilarityAlgorithmCpu::AllocateMemoryForSingleRun()
 }
 
 
-void SimilarityAlgorithmCpu::RunAll(Sequences* s, int gapOp, int gapEx)
+void SimilarityAlgorithmCpu::RunAll(Sequences* s, int gapOp, int gapEx, int gapExt2Len, int gapExt2)
 {
     int n = s->getSequenceNumber();
     int len = s->getMaxSeqLen()*2;
@@ -95,7 +125,7 @@ void SimilarityAlgorithmCpu::RunAll(Sequences* s, int gapOp, int gapEx)
             winPtrX = winPtrX + len*(n*j + i);
             winPtrY = winPtrY + len*(n*j + i);
 
-            Run(s, i, j, gapOp, gapEx);
+            Run(s, i, j, gapOp, gapEx, gapExt2Len, gapExt2);
 
             for(int k=0; result1[k]!=0; k++)
             {

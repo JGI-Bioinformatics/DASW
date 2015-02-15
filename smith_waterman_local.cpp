@@ -39,7 +39,7 @@ void SmithWatermanLocal::FillMatrices()
     int Elen, Flen[seq2Length+1];
     for (int j = 1; j <= seq2Length; j++)
       Flen[j] = 0;
-    printf("gapOpen %d, gapExt %d, gapExt2Len %d, gapEx2 %d\n", gapOp, gapEx, gapEx2Len, gapEx2);
+    printf("gapOpen %d, gapExt %d, gapExt2Len %d, gapExt2 %d\n", gapOp, gapEx, gapExt2Len, gapExt2);
     
     int *Ai = A[0], *Ai1, *Ei = E[0], *Ei1, *Fi = F[0], *Fi1;
     BackUpStruct *Bi = B[0], *Bi1;
@@ -57,7 +57,7 @@ void SmithWatermanLocal::FillMatrices()
         for (int j = 1; j <= seq2Length; j++)
         {
             int Aij, Eij, Fij;
-            int e1 = Ei[j - 1] - ((Elen >= gapEx2Len) ? gapEx2 : gapEx), e2 = Ai[j - 1] - gapOp;;
+            int e1 = Ei[j - 1] - ((Elen >= gapExt2Len) ? gapExt2 : gapEx), e2 = Ai[j - 1] - gapOp;;
             if (e1 >= e2) {
                Eij = e1;
                Bi[j - 1].continueLeft = 1;
@@ -68,7 +68,7 @@ void SmithWatermanLocal::FillMatrices()
                Elen = 0;
             }
 
-            int f1 = Fi1[j] - ((Flen[j] >= gapEx2Len) ? gapEx2 : gapEx), f2 = Ai1[j] - gapOp;
+            int f1 = Fi1[j] - ((Flen[j] >= gapExt2Len) ? gapExt2 : gapEx), f2 = Ai1[j] - gapOp;
             if (f1 >= f2) {
                 Fij = f1;
                 Bi1[j].continueUp = 1;

@@ -20,8 +20,9 @@ namespace Algorithms
         class SimilarityAlgorithmCpu
         {
         public:
-            virtual void Run(Sequences* s, int seq1No, int seq2No, int gapOp, int gapEx);
-            virtual void RunAll(Sequences* s, int gapOp, int gapEx);
+            virtual void Run(Sequences* s, int seq1No, int seq2No, int gapOp, int gapEx, int gapExt2Len, int gapExt2);
+            virtual void RunSeqs(Sequences* s, int seq1No, Sequences* s2, int seq2No, int gapOp, int gapEx, int gapExt2Len, int gapExt2);
+            virtual void RunAll(Sequences* s, int gapOp, int gapEx, int gapExt2Len, int gapExt2);
             virtual void PrintResults(const char* fileName);
             SimilarityAlgorithmCpu();
             ~SimilarityAlgorithmCpu();
@@ -37,6 +38,7 @@ namespace Algorithms
             virtual void BackwardMoving() = 0;
             virtual void DeallocateMemoryForAllRuns();
             virtual void DeallocateMemoryForSingleRun();
+            virtual void JustRun();
 
             //INPUT DATA
             // seq1 and seq2 are 1-based array of sequence characters
@@ -47,6 +49,8 @@ namespace Algorithms
             SubstitutionMatrix* sm;
             int gapOp;
             int gapEx;
+            int gapExt2Len;
+            int gapExt2;
 
             //MATRICES
             int **A;

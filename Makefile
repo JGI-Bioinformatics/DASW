@@ -2,7 +2,7 @@
 
 NVCCFLAGS = -O3 $(NVCCOPTIONS) -I $(TOOLKIT_INC_DIR) -I. -I $(SDK_COMMON_DIR)/inc/
 
-CXXFLAGS = -O3 -g
+CXXFLAGS = -O3 -g -fopenmp
 LIBS = -lm
 
 all: dasw directories

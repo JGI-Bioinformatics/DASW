@@ -1,3 +1,4 @@
+#include <omp.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <iostream>
@@ -16,12 +17,13 @@ using namespace std;
 //GLOBAL DATA
 char gapOpen = 5;
 char gapExtension = 2;
+char gapExt2Len = 10;
+char gapExt2 = 0;
 char* submatrix = (char*)"data/substitution_matrices/EBLOSUM30";
-char* infile = (char*)"data/3_667.fax";
+char* databasefile = (char*)"data/3_667.fax";
+char* queryfile = (char*)"data/3_667.fax";
 char* outfile = NULL;
 char* algName = (char*)"sws";//Smith Waterman Score
-int seqX = -1;
-int seqY = -1;
 
 bool readArguments(int argc, char** argv)
 {
@@ -39,9 +41,13 @@ bool readArguments(int argc, char** argv)
         return false;
     }
 
-    argBuf = (char*)arguments.getParam("infile", "i");
+    argBuf = (char*)arguments.getParam("database", "d");
     if( (argBuf != NULL) && (strcmp(argBuf,"true")) )
-        infile = strdup(argBuf);
+        databasefile = strdup(argBuf);
+
+    argBuf = (char*)arguments.getParam("query", "q");
+    if( (argBuf != NULL) && (strcmp(argBuf,"true")) )
+        queryfile = strdup(argBuf);
 
     argBuf = (char*)arguments.getParam("outfile", "o");
     if( (argBuf != NULL) && (strcmp(argBuf,"true")) )
@@ -59,13 +65,13 @@ bool readArguments(int argc, char** argv)
     if ((argBuf != NULL) && (atoi(argBuf)>0))
         gapExtension = atoi(argBuf);
 
-    argBuf = (char*)arguments.getParam("seqX", "x");
-    if ((argBuf != NULL) && (atoi(argBuf) > 0))
-        seqX = atoi(argBuf) - 1;
+    argBuf = (char*)arguments.getParam("gapext2len", "ge2l");
+    if ((argBuf != NULL) && (atoi(argBuf)>0))
+        gapExt2Len = atoi(argBuf);
 
-    argBuf = (char*)arguments.getParam("seqY", "y");
-    if ((argBuf != NULL) && (atoi(argBuf) > 0))
-        seqY = atoi(argBuf) - 1;
+    argBuf = (char*)arguments.getParam("gapext2", "ge2");
+    if ((argBuf != NULL) && (atoi(argBuf)>0))
+        gapExt2 = atoi(argBuf);
 
     return true;
     
@@ -79,40 +85,35 @@ int main(int argc, char** argv)
     
     try
     {
-//        SubstitutionMatrix sm(submatrix);
-//        Sequences s(infile, &sm);
-//        s.load();
-//        s.sortSequences();
-
-        //Homo_sapiens.GRCh37.55.pep.all.fa
         SubstitutionMatrix sm(submatrix);
-        Sequences s(infile, &sm);
-        s.load();
-        s.sortSequences();
+        Sequences db(databasefile, &sm);
+        db.load();
+        db.sortSequences();
 
-//        s.writeToFile("data/5_xxx.fax",100,420);
-        
-//        char fileName[512];
-//        for(int i=16; i<1025; i+=16)
-//        {
-//            sprintf(fileName, "data/test/16-1024/5_%d.fax", i);
-//            s.writeToFile(fileName, i);
-//        }
+        SmithWatermanLocal swl[omp_get_max_threads()];
 
-//        char fileName[512];
-//        for(int i=0; i<6; i++)
-//        {
-//            sprintf(fileName, "data/test/5_4000_%d.fax", i);
-//            s.writeToFile(fileName, 4000);
-//        }
+        if (strcmp(databasefile, queryfile) == 0) {
+            printf("query and database are the same, calculating lower triangle of database\n");
 
+          #pragma omp parallel for schedule(dynamic, 1)
+          for(int i = 0; i < db.getSequenceNumber(); i++) {
+            for(int j = 0; j <= i; j++) {
+              swl[omp_get_thread_num()].Run(&db, i, j, gapOpen, gapExtension, gapExt2Len, gapExt2);
+            }
+          }
+        } else {
 
+          Sequences query(queryfile, &sm);
+          query.load();
+          query.sortSequences();
 
-//        s.writeToFile("data/3_xxx.fax", 100, 420);
-
-        SmithWatermanLocal swl;
-	swl.RunAll(&s, gapOpen, gapExtension);
-        //swl.PrintResults("results/2.txt");
+          #pragma omp parallel for schedule(dynamic, 1)
+          for(int i = 0; i < query.getSequenceNumber(); i++) {
+             for(int j = 0; j < db.getSequenceNumber(); j++) {
+               swl[omp_get_thread_num()].RunSeqs(&query, i, &db, j, gapOpen, gapExtension, gapExt2Len, gapExt2);
+             }
+          }
+       }
 
     }
     catch (Exception* ex)
