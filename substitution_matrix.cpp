@@ -112,12 +112,19 @@ unsigned char SubstitutionMatrix::revConvert(char i)
 
 char SubstitutionMatrix::getScore(char i_1, char i_2)
 {
+    /*
+    // TODO check char indexes in sequence import, skip this inner loop check
     if(i_1<0 || i_2<0)
         throw new IndexOutOfRangeException("Index out of range: SubstitutionMatrix::getScore\n");
+    */
     
     int addr = i_1*lettersNumber + i_2;
+    
+    /*
+    // TODO check char indexes in sequence import, skip this inner loop check
     if(addr >= lettersNumber*lettersNumber)
         throw new IndexOutOfRangeException("Index out of range: SubstitutionMatrix::getScore\n");
+    */
 
     return matrix[addr];
 }
